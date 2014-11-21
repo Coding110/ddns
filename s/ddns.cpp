@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "ddns.h"
 #include "db.h"
@@ -31,7 +32,9 @@ char *http_query_proc(vector<key_value_t> &kvs)
 	{
 		http_result.result = 1;
 		http_result.error = "Bad request";
+		return result_json(http_result);
 	}
+	return NULL;
 
 	if(strncmp(method, "ddns", 4) == 0){
 	// ddns
@@ -43,7 +46,10 @@ char *http_query_proc(vector<key_value_t> &kvs)
 		if(host == "default"){
 			// 此时把连接另一端的IP设为对应域名的IP
 		}
-		dns_update(domain, host);
+		if(dns_update(domain, host) < 0){
+			http_result.result = 1;
+			http_result.error = "Internal error";
+		}
 	}else{
 		http_result.result = 1;
 		http_result.error = "unsupported method";

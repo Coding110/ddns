@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "common.h"
+#include "ddns.h"
 
 int request_post(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp);
 int request_get(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp);
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
 	{
 		method = FCGX_GetParam("REQUEST_METHOD", envp);
 		if(strcmp(method, "POST") == 0){
-			request_post(in, out, &envp);
+			//request_post(in, out, &envp);
 		}else if(strcmp(method, "GET") == 0){
 			request_get(in, out, &envp);
 		}
@@ -41,44 +42,19 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void test()
-{
-	//printf("hello\n");
-	char query[] = "md=d&dm=www.becktu.com&host=2.3.4.5";
-	vector<key_value_t> kvs;
-	parse_get_query(query, kvs);
-	key_values_print(kvs);
-	kvs.clear();
-
-	char query1[] = "md=&dm=www.becktu.com&host=2.3.4.5";
-	parse_get_query(query1, kvs);
-	key_values_print(kvs);
-	kvs.clear();
-
-	char query2[] = "md=&dm=www.becktu.com&host";
-	parse_get_query(query2, kvs);
-	key_values_print(kvs);
-	kvs.clear();
-}
-
-void key_values_print(vector<key_value_t> &kvs)
-{
-	int len = kvs.size();
-	printf("Key value set, size(%d):\n", len);
-	printf("No.\tKey\tValue\n");
-	for(int i = 0; i < len; i++)
-	{
-		printf("%d\t%s\t%s\n", i, kvs[i].key.c_str(), kvs[i].value.c_str());
-	}
-}
-
 int request_get(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp)
 {
+	vector<key_value_t> kvs;
 	char *query_string = FCGX_GetParam("QUERY_STRING", *envp);
-    FCGX_FPrintF(out, "Content-type: text/html\r\n"
+	char query[1024] = {0};
+	memcpy(query, query_string, strlen(query_string));
+	parse_get_query(query, kvs);
+	char *result = http_query_proc(kvs);
+	//const char *result = "ok";
+    FCGX_FPrintF(out, "Content-type: text/plain; charset=utf-8\r\n"
     	"\r\n"
     	""
-		"query: %s", query_string);
+		"%s", result);
 	return 0;
 }
 
@@ -147,3 +123,49 @@ int post_data_handle(char* buf, int buflen, char* contentSplit,FCGX_Stream *out)
 	}
 	return 0;
 }
+
+void test()
+{
+	//printf("hello\n");
+	//char query[] = "md=d&dm=www.becktu.com&host=2.3.4.5";
+	//char query[] = "md=ddns&dm=w.becktu.com&host=1.2.3.4";
+	//vector<key_value_t> kvs;
+	//parse_get_query(query, kvs);
+	//key_values_print(kvs);
+	//kvs.clear();
+
+	/*
+	char query1[] = "md=&dm=www.becktu.com&host=2.3.4.5";
+	parse_get_query(query1, kvs);
+	key_values_print(kvs);
+	kvs.clear();
+
+	char query2[] = "md=&dm=www.becktu.com&host";
+	parse_get_query(query2, kvs);
+	key_values_print(kvs);
+	kvs.clear();
+	*/
+
+	vector<key_value_t> kvs;
+	char query_string[] = "md=ddns&dm=w.becktu.com&host=1.2.3.4";
+	parse_get_query(query_string, kvs);
+	char *result = http_query_proc(kvs);
+	//const char *result = "ok";
+    printf("Content-type: text/plain; charset=utf-8\r\n"
+    	"\r\n"
+    	""
+		"%s", result);
+	delete[] result;
+}
+
+void key_values_print(vector<key_value_t> &kvs)
+{
+	int len = kvs.size();
+	printf("Key value set, size(%d):\n", len);
+	printf("No.\tKey\tValue\n");
+	for(int i = 0; i < len; i++)
+	{
+		printf("%d\t%s\t%s\n", i, kvs[i].key.c_str(), kvs[i].value.c_str());
+	}
+}
+
