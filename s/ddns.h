@@ -15,7 +15,7 @@
  *
  */
 
-char *http_query_proc(vector<key_value_t> &kvs);
+char *http_query_proc(vector<key_value_t> &kvs, char *remote_ip);
 
 #endif
 

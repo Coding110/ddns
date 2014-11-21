@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
 	FCGX_Finish();
 
-	test();
+	//test();
 
 	return 0;
 }
@@ -46,10 +46,12 @@ int request_get(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp)
 {
 	vector<key_value_t> kvs;
 	char *query_string = FCGX_GetParam("QUERY_STRING", *envp);
-	char query[1024] = {0};
+	char *ip = FCGX_GetParam("REMOTE_ADDR", *envp);
+	char query[1024] = {0}, remote_ip[20] = {0};
 	memcpy(query, query_string, strlen(query_string));
+	memcpy(remote_ip, ip, strlen(ip));
 	parse_get_query(query, kvs);
-	char *result = http_query_proc(kvs);
+	char *result = http_query_proc(kvs, remote_ip);
 	//const char *result = "ok";
     FCGX_FPrintF(out, "Content-type: text/plain; charset=utf-8\r\n"
     	"\r\n"
@@ -124,6 +126,11 @@ int post_data_handle(char* buf, int buflen, char* contentSplit,FCGX_Stream *out)
 	return 0;
 }
 
+char *get_client_ip(FCGX_Stream *in, char *ip) // ip的大小必须超过16个字节 
+{
+
+}
+
 void test()
 {
 	//printf("hello\n");
@@ -147,9 +154,9 @@ void test()
 	*/
 
 	vector<key_value_t> kvs;
-	char query_string[] = "md=ddns&dm=w.becktu.com&host=1.2.3.4";
+	char query_string[] = "md=ddns&dm=w.becktu.com&host=default";
 	parse_get_query(query_string, kvs);
-	char *result = http_query_proc(kvs);
+	char *result = http_query_proc(kvs, NULL);
 	//const char *result = "ok";
     printf("Content-type: text/plain; charset=utf-8\r\n"
     	"\r\n"

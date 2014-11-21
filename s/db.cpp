@@ -19,8 +19,8 @@ int dns_update(const char* domain, const char *host)
 		return -1;
 	}
 
-	sprintf(sql, "update records set content = \"%s\" where name = \"%s\";",
-		host, domain);
+	sprintf(sql, "update records set content = \"%s\" where name = \"%s\" and content <> \"%s\";",
+		host, domain, host);
 
 	if(SQLITE_OK != sqlite3_exec(pDb, sql, 0, 0, &err_msg))
 	{
