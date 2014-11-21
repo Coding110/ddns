@@ -37,7 +37,9 @@ const char *get_value_by_key(vector<key_value_t> &kvs, const char *key)
 	for(int i = 0; i < len; i++)
 	{
 		if(kvs[i].key.compare(key) == 0){
+			//if(kvs[i].value.size > 0)
 			return kvs[i].value.c_str();
+			//else return NULL;
 		}
 	}
 	return NULL;

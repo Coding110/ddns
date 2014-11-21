@@ -154,8 +154,11 @@ void test()
 	*/
 
 	vector<key_value_t> kvs;
-	char query_string[] = "md=ddns&dm=w.becktu.com&host=default";
+	//char query_string[] = "md=ddns&dm=w.becktu.com&host=default";
+	//char query_string[] = "md=ddns&dm=&host=default";
+	char query_string[] = "md=&dm=&host=default";
 	parse_get_query(query_string, kvs);
+	key_values_print(kvs);
 	char *result = http_query_proc(kvs, NULL);
 	//const char *result = "ok";
     printf("Content-type: text/plain; charset=utf-8\r\n"

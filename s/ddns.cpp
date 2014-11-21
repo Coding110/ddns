@@ -27,7 +27,7 @@ char *http_query_proc(vector<key_value_t> &kvs, char *remote_ip)
 {
 	http_result_t http_result;
 	http_result.result = 0;
-	http_result.nat_host = remote_ip;
+	if(remote_ip) http_result.nat_host = remote_ip;
 
 	const char *method = get_value_by_key(kvs, "md");	
 	if(method == NULL)
@@ -41,9 +41,9 @@ char *http_query_proc(vector<key_value_t> &kvs, char *remote_ip)
 	// ddns
 		const char *domain = get_value_by_key(kvs, "dm");
 		const char *host = get_value_by_key(kvs, "host");
-		if(domain == NULL || host == NULL){
+		if(domain == NULL || host == NULL || strlen(domain) < 1 || strlen(host) < 7){
 			http_result.result = 1;
-			http_result.error = "Incomplete information";
+			http_result.error = "Incomplete or error setting";
 		}
 		if(strncmp(host, "default", 6) == 0){
 			// 此时把连接另一端的IP设为对应域名的IP
