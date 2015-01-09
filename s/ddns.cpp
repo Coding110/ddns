@@ -1,4 +1,7 @@
+#include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include "ddns.h"
 #include "db.h"
@@ -13,6 +16,7 @@ typedef struct _http_result_t
 }http_result_t;
 
 char *result_json(http_result_t &http_result);
+int exec_shell(char **buf, int buf_len);
 
 /*
  * 	对GET参数进行处理
@@ -53,9 +57,32 @@ char *http_query_proc(vector<key_value_t> &kvs, char *remote_ip)
 				host = "0.0.0.0";
 			}
 		}
-		if(dns_update(domain, host) < 0){
+
+		int ret = dns_update(domain, host);
+		if(ret < 0){
 			http_result.result = 1;
 			http_result.error = "Internal error";
+		}else if(ret == 1){
+			http_result.result = 1;
+			http_result.error = "Recorde can't find";
+		}else if(ret == 2){
+			//char *buferr = new char[1024]; // for test
+			//memset(buferr, 0, 1024);
+			//sprintf(buferr, " - none");
+			//exec_shell(&buferr, 1024);
+			http_result.result = 0;
+			http_result.error = "Recorde still fresh.";
+			//http_result.error = "Recorde still fresh. " + string(buferr);
+			//delete[] buferr;
+		}else if(ret == 0){
+			char *buferr = new char[1024]; // for test
+			//sprintf(buferr, " - none");
+			memset(buferr, 0, 1024);
+			exec_shell(&buferr, 1024);
+			http_result.result = 0;
+			http_result.error = "Recorde refreshed. " + string(buferr);
+			delete[] buferr;
+		}else{
 		}
 	}else{
 		http_result.result = 1;
@@ -72,3 +99,14 @@ char *result_json(http_result_t &http_result)
 	return result;
 }
 
+int exec_shell(char **buf, int buf_len)
+{
+    FILE *pp = popen("./sbin/cmd.sh 2>&1", "r");
+	if(pp == NULL){
+		sprintf(*buf, " - failed");
+		return 0;
+	}
+    fgets(*buf, buf_len, pp);
+    pclose(pp);
+    return 0;
+}
