@@ -1,5 +1,4 @@
 #! /bin/sh
 
-/usr/local/nginx/sbin/nginx -s reload
+nohup ./cron.sh in.becktu.com 10 & > /dev/null
 
-echo " - complete."
