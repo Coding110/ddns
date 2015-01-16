@@ -17,29 +17,32 @@ sec=$2;
 i=1;
 dig_time=0;
 max_dig_time=600;
+sleep_time_for_reload=60;
 
 old_ip=`dig $domain | grep $domain | grep -v ";" | awk '{print $5}'`;
-echo "old ip: $old_ip";
-echo "domain: $domain";
+echo "old ip: $old_ip" >> $logfile
+echo "domain: $domain" >> $logfile
 
 while [[ $i -ne 0 ]]; do
 	sleep $sec;
 	let "dig_time+=$sec";
-	echo "dig time: $dig_time";
+	echo "dig time: $dig_time" >> $logfile
 
 	new_ip=`dig $domain | grep $domain | grep -v ";" | awk '{print $5}'`;
-	echo "new ip: $new_ip";
+	echo "new ip: $new_ip" >> $logfile
 
 	if [[ $old_ip != $new_ip ]]; then
-		echo "do something";
+		echo "reloading nginx..." >> $logfile
+		sleep $sleep_time_for_reload;
 		/usr/local/nginx/sbin/nginx -s reload
 		break;
 	fi;
 
 	if [[ $dig_time -gt $max_dig_time ]]; then
-		echo "Time out";
+		echo "Time out" >> $logfile
+		/usr/local/nginx/sbin/nginx -s reload
 		break;
 	fi;
 done;
 
-echo "Task over.";
+echo "Task over." >> $logfile

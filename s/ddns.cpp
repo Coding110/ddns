@@ -101,12 +101,18 @@ char *result_json(http_result_t &http_result)
 
 int exec_shell(char **buf, int buf_len)
 {
-    FILE *pp = popen("./sbin/cmd.sh 2>&1", "r");
+    //FILE *pp = popen("./sbin/cmd.sh 2>&1", "r");
+    FILE *pp = popen("ddnscmd 2>&1", "r");
 	if(pp == NULL){
 		sprintf(*buf, " - failed");
 		return 0;
 	}
     fgets(*buf, buf_len, pp);
+
+	//char cwd[1024] = {0};
+	//getcwd(cwd, 1024);
+	//sprintf(*buf+strlen(*buf), ", current dir: %s", cwd);
+
     pclose(pp);
     return 0;
 }

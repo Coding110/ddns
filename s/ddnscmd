@@ -1,0 +1,7 @@
+#! /bin/sh
+
+logfile='/var/log/ddns.log';
+echo `date`." ddnscmd start." >> $logfile
+nohup /usr/local/nginx/sbin/cron.sh in.becktu.com 10 & 2>&1 >> $logfile
+echo "ddnscmd complete" >> $logfile
+

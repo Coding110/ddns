@@ -1,1 +1,5 @@
-Execute cmd.sh after update ddns if needed and succees.
+Execute ddnscmd after update ddns if needed and succees.
+
+ddnscmd script under /usr/local/bin
+cron.sh script under sbin/
+
