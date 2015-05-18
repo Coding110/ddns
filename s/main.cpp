@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "ddns.h"
+#include "db.h"
 
 int request_post(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp);
 int request_get(FCGX_Stream *in, FCGX_Stream *out, FCGX_ParamArray *envp);
@@ -18,6 +19,28 @@ void key_values_print(vector<key_value_t> &kvs);
 
 int main(int argc, char *argv[])
 {
+	if(argc > 1){
+		if(argc == 3){
+			// as normal program, not cgi now
+			printf("update dns, domain: %s, host: %s\n", argv[1], argv[2]);
+			int ret = dns_update(argv[1], argv[2]);
+			if(ret < 0){
+			        printf("Internal error.\n");
+			}else if(ret == 1){
+			        printf("Recorde can't find.\n");
+			}else if(ret == 2){
+			        printf("Recorde still fresh.\n");
+			}else if(ret == 0){
+			        printf("Recorde refreshed.\n");
+			}else{
+			        printf("Unknown error.\n");
+			}
+		}else{
+			printf("Usage: %s <domain> <host>\n", argv[0]);
+		}
+		return 0;
+	}
+
 	FCGX_Stream *in;
 	FCGX_Stream *out;
 	FCGX_Stream *err;
