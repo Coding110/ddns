@@ -5,9 +5,11 @@ function login_url()
 	return "http://miwifi.com/cgi-bin/luci/api/xqsystem/login";
 }
 
-function logout_url()
+function logout($token)
 {
-	return "";
+	$url = "http://miwifi.com/cgi-bin/luci/;stok=$token/web/logout";
+	$cmd = "curl -s \"$url\"";
+	$result = exec($cmd);
 }
 
 function wan_info_url($token)
@@ -27,6 +29,7 @@ function login_for_token($username, $password)
 function get_nat_ip($token)
 {
 	$url = wan_info_url($token);
+	//echo "URL for wan info: $url\n";
 	$cmd = "curl -s \"$url\" | awk -F\",\" '{print $16}' | awk -F\"\\\"\" '{print $4}'";
 	$result = exec($cmd);
 	return $result;
@@ -42,6 +45,7 @@ function main($argc, $argv)
 	//echo "$token\n";
 	$ip = get_nat_ip($token);
 	echo "$ip\n";
+	logout($token);
 }
 
 main($argc, $argv);
