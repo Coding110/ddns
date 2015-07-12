@@ -35,9 +35,7 @@ main($argc, $argv);
 function main($argc, $argv)
 {
 	if($argc == 1){
-		header("HTTP/1.1 403 Forbidden");
-		echo "Error\n";
-		exit();
+		usage($argv[0]);
 	}
 
 

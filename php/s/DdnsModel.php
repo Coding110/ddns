@@ -49,7 +49,7 @@ class MysqlDB
 
 	function update_record($sub_domain, $content)
 	{
-		$sql = "update records set content = '$content' where name = '$sub_domain';";
+		$sql = "update records set content = '$content' where name = '$sub_domain' and content != '$content';";
 		return $this->mysqli->query($sql);
 	}
 

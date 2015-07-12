@@ -8,6 +8,9 @@ if(!defined('DDNS_ROOT_PATH'))
 
 require_once('common.php');
 
+global $g_key_word;
+$g_key_word = "";
+
 /*
  *	PATH
  *		/ddns		
@@ -50,14 +53,24 @@ function ddns_update($param)
 
 	header("HTTP/1.1 200 OK");
 
-	update_record($param['dm'], $param['host']);
+	if(update_record($param['dm'], $param['host']) == true){
+		echo "{err:0}";
+	}else{
+		echo "{err:1}";
+	}
 	return;
 }
 
 function check_valid($domain, $timestamp, $key)
 {
-	// key = md5($domain + "_DDNS_" + $timestamp)
-	return true;
+	global $g_key_word;
+	$str = $timestamp.$g_key_word.$domain;
+	$key_check = md5($str);
+	if($key == $key_check){ 
+		return true;
+	}else{
+		return false;
+	}
 }
 
 function parse_query($var)
