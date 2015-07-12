@@ -1,0 +1,5 @@
+
+local_tool.php: loacl tool for pdns
+
+web URL sample: http://host/ddns?md=update&dm=www.sample.com&host=10.8.0.11
+
