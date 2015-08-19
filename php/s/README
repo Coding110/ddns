@@ -1,5 +1,7 @@
 
 local_tool.php: loacl tool for pdns
 
-web URL sample: http://host/ddns?md=update&dm=www.sample.com&host=10.8.0.11&ts=xx&key=xx
+web URL sample: 
+	1.http://host/ddns?md=update&dm=www.sample.com&host=10.8.0.11&ts=xx&key=xx
+	2.http://host/getip?ts=xx&key=xx
 
