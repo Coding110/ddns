@@ -25,22 +25,25 @@ function ddns_enter()
 {
 	$uri = $_SERVER['REQUEST_URI'];
 	$path = parse_url($uri, PHP_URL_PATH);
-	if($path != "/ddns"){
+
+	if($path == "/ddns"){
+		$PARAM = parse_query($uri);
+		$PARAM['md'] = isset($PARAM['md'])?$PARAM['md']:'';
+		$PARAM['dm'] = isset($PARAM['dm'])?$PARAM['dm']:'';
+		$PARAM['host'] = isset($PARAM['host'])?$PARAM['host']:'';
+		$PARAM['ts'] = isset($PARAM['ts'])?$PARAM['ts']:'';
+		$PARAM['key'] = isset($PARAM['key'])?$PARAM['key']:'';
+
+		if($PARAM['md'] == "update"){
+			ddns_update($PARAM);
+		}else{
+		}
+	}else if($path == "/getip"){
+		get_origin_host_ip();
+	}else{
 		header("HTTP/1.1 403 Forbidden");
 		return; 
 	}
-	$PARAM = parse_query($uri);
-	$PARAM['md'] = isset($PARAM['md'])?$PARAM['md']:'';
-	$PARAM['dm'] = isset($PARAM['dm'])?$PARAM['dm']:'';
-	$PARAM['host'] = isset($PARAM['host'])?$PARAM['host']:'';
-	$PARAM['ts'] = isset($PARAM['ts'])?$PARAM['ts']:'';
-	$PARAM['key'] = isset($PARAM['key'])?$PARAM['key']:'';
-
-	if($PARAM['md'] == "update"){
-		ddns_update($PARAM);
-	}else{
-	}
-
 }
 
 function ddns_update($param)
@@ -59,6 +62,19 @@ function ddns_update($param)
 		echo "{err:1}";
 	}
 	return;
+}
+
+function get_origin_host_ip()
+{
+	header("HTTP/1.1 200 OK");
+	if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    	$ip = $_SERVER['HTTP_CLIENT_IP'];
+	} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	} else {
+	    $ip = $_SERVER['REMOTE_ADDR'];
+	}
+	echo "{\"ip\":\"$ip\"}";
 }
 
 function check_valid($domain, $timestamp, $key)
