@@ -7,7 +7,8 @@ main($argc, $argv);
 function main($argc, $argv)
 {
 	$domain = "";
-	$host = get_nat_ip();
+	//$host = get_nat_ip_138();
+	$host = get_nat_ip_becktu();
 	
 	if($argc == 2){
 	    $domain = $argv[1];
@@ -69,6 +70,25 @@ function get_nat_ip()
 	$msg = file_get_contents($dyn_check_ip_url);
 	$host_info = json_decode($msg);
 	return $host_info->data[0]->origip;
+}
+
+function get_nat_ip_138()
+{
+	$dyn_check_ip_url = "http://1111.ip138.com/ic.asp";
+	$msg = file_get_contents($dyn_check_ip_url);
+	$start = stripos($msg, "[");
+	$end = stripos($msg, "]");
+	$ip = substr($msg, $start+1, $end - $start - 1);
+	//echo "|$ip|\n";
+	return $ip;
+}
+
+function get_nat_ip_becktu()
+{
+	$dyn_check_ip_url = "http://dyn.becktu.com:8080/getip";
+	$msg = file_get_contents($dyn_check_ip_url);
+	$host_info = json_decode($msg);
+	return $host_info->ip;
 }
 
 ?>
